@@ -38,7 +38,7 @@ final class TrainStatusViewModel: ObservableObject {
     func startTracking() {
         guard let client else {
             statusText = "ODPT APIキー未設定"
-            assertionFailure("ODPT APIキーが未設定です。")
+            assertionFailure("ODPT API key is not configured.")
             return
         }
         requestNotificationPermission()
