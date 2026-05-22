@@ -17,8 +17,6 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.distanceFilter = 20
-        // Requires Info.plist background location mode; this prioritizes reminder accuracy over battery usage.
-        locationManager.allowsBackgroundLocationUpdates = true
     }
 
     func requestPermissions() {
@@ -30,6 +28,11 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         default:
             break
         }
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        // Requires Info.plist background location mode; this prioritizes reminder accuracy over battery usage.
+        manager.allowsBackgroundLocationUpdates = (manager.authorizationStatus == .authorizedAlways)
     }
 
     func startLocationTracking() {

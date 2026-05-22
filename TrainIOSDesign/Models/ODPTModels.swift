@@ -1,7 +1,7 @@
 import Foundation
 import CoreLocation
 
-struct ODPTTrainInformation: Codable, Identifiable {
+struct ODPTTrainInformation: Codable {
     let context: String?
     let id: String?
     let type: String?
@@ -12,10 +12,6 @@ struct ODPTTrainInformation: Codable, Identifiable {
     let trainInformationStatus: String?
     let trainInformationText: String?
     let delay: Int?
-
-    var identifier: String {
-        id ?? UUID().uuidString
-    }
 
     var normalizedDelayMinutes: Int {
         DelayNormalizer.normalizeDelaySecondsToMinutes(delayInSeconds: delay)
@@ -35,7 +31,7 @@ struct ODPTTrainInformation: Codable, Identifiable {
     }
 }
 
-struct ODPTRailway: Codable, Identifiable {
+struct ODPTRailway: Codable {
     let context: String?
     let id: String?
     let type: String?
@@ -56,7 +52,7 @@ struct ODPTRailway: Codable, Identifiable {
     }
 }
 
-struct ODPTStation: Codable, Identifiable {
+struct ODPTStation: Codable {
     let context: String?
     let id: String?
     let type: String?
@@ -81,7 +77,7 @@ struct ODPTStation: Codable, Identifiable {
     }
 }
 
-struct ODPTTrain: Codable, Identifiable {
+struct ODPTTrain: Codable {
     let context: String?
     let id: String?
     let type: String?

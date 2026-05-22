@@ -10,6 +10,11 @@ import ActivityKit
 
 @MainActor
 final class TrainStatusViewModel: ObservableObject {
+    // UI preview/demo baseline for immediate visual feedback before live ODPT timing arrives.
+    private let mockETAMinutes = 12
+    // Fallback estimate when ODPT payload does not include valid/scheduled datetime.
+    private let fallbackScheduledMinutes = 8
+
     @Published var routeName: String = "路線未設定"
     @Published var destinationStationName: String = "目的駅未設定"
     @Published var remainingMinutes: Int = 0
@@ -65,7 +70,10 @@ final class TrainStatusViewModel: ObservableObject {
         routeName = "東京メトロ 東西線"
         destinationStationName = "日本橋"
         remainingStations = 4
-        recalculateETA(scheduledDate: .now.addingTimeInterval(12 * 60), delayInSeconds: nil)
+        recalculateETA(
+            scheduledDate: .now.addingTimeInterval(TimeInterval(mockETAMinutes * 60)),
+            delayInSeconds: nil
+        )
         statusText = "追跡中"
     }
 
@@ -101,7 +109,7 @@ final class TrainStatusViewModel: ObservableObject {
         if let railway = first.railway {
             routeName = railway
         }
-        let scheduledDate = first.valid ?? first.date ?? .now.addingTimeInterval(8 * 60)
+        let scheduledDate = first.valid ?? first.date ?? .now.addingTimeInterval(TimeInterval(fallbackScheduledMinutes * 60))
 
         recalculateETA(
             scheduledDate: scheduledDate,
