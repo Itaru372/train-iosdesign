@@ -3,6 +3,7 @@ import Combine
 import UserNotifications
 import SwiftData
 import SwiftUI
+import OSLog
 #if canImport(ActivityKit)
 import ActivityKit
 #endif
@@ -18,6 +19,7 @@ final class TrainStatusViewModel: ObservableObject {
 
     let coordinator: TransitTrackingCoordinator
     private let client: ODPTClient?
+    private let logger = Logger(subsystem: "com.trainiosdesign.app", category: "TrainStatusViewModel")
     private var cancellables = Set<AnyCancellable>()
 
 #if canImport(ActivityKit)
@@ -36,7 +38,7 @@ final class TrainStatusViewModel: ObservableObject {
     func startTracking() {
         guard let client else {
             statusText = "ODPT APIキー未設定"
-            assertionFailure("ODPT API key is not configured.")
+            assertionFailure("ODPT APIキーが未設定です。")
             return
         }
         requestNotificationPermission()
@@ -63,7 +65,7 @@ final class TrainStatusViewModel: ObservableObject {
         routeName = "東京メトロ 東西線"
         destinationStationName = "日本橋"
         remainingStations = 4
-        recalculateETA(scheduledDate: .now.addingTimeInterval(12 * 60), delaySeconds: nil)
+        recalculateETA(scheduledDate: .now.addingTimeInterval(12 * 60), delayInSeconds: nil)
         statusText = "追跡中"
     }
 
@@ -99,28 +101,31 @@ final class TrainStatusViewModel: ObservableObject {
         if let railway = first.railway {
             routeName = railway
         }
+        let scheduledDate = first.valid ?? first.date ?? .now.addingTimeInterval(8 * 60)
 
-        if isDelayed {
-            recalculateETA(
-                scheduledDate: .now.addingTimeInterval(10 * 60),
-                delaySeconds: first.delay
-            )
-        } else {
-            recalculateETA(
-                scheduledDate: .now.addingTimeInterval(8 * 60),
-                delaySeconds: nil
-            )
-        }
+        recalculateETA(
+            scheduledDate: scheduledDate,
+            delayInSeconds: isDelayed ? first.delay : nil
+        )
     }
 
-    private func recalculateETA(scheduledDate: Date, delaySeconds: Int?) {
-        let estimate = ETAEstimator.estimate(from: scheduledDate, delaySeconds: delaySeconds)
+    private func recalculateETA(scheduledDate: Date, delayInSeconds: Int?) {
+        let estimate = ETAEstimator.estimate(from: scheduledDate, delayInSeconds: delayInSeconds)
         remainingMinutes = estimate.remainingMinutes
         Task { await updateLiveActivity() }
     }
 
     private func requestNotificationPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { [weak self] granted, error in
+            if let error {
+                self?.logger.error("Notification permission error: \(error.localizedDescription, privacy: .public)")
+            }
+            if !granted {
+                DispatchQueue.main.async {
+                    self?.statusText = "通知権限が未許可"
+                }
+            }
+        }
     }
 
     private func updateLiveActivity() async {

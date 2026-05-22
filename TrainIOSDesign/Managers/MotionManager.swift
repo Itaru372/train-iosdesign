@@ -14,7 +14,7 @@ final class MotionManager: ObservableObject {
         activityManager.startActivityUpdates(to: queue) { [weak self] activity in
             guard let self, let activity else { return }
             let currentlyWalking = activity.walking || activity.running
-            let currentlyVehicle = activity.automotive || activity.cycling
+            let currentlyVehicle = activity.automotive
 
             if Self.didTransitionToTransit(
                 previousWasWalking: self.wasWalking,

@@ -69,17 +69,23 @@ final class TransitTrackingCoordinator: ObservableObject {
     }
 
     private func notifyApproachingDestination() {
-        let content = UNMutableNotificationContent()
-        content.title = "まもなく目的駅です"
-        content.body = "降車の準備をしてください。"
-        content.sound = .default
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+                return
+            }
 
-        let request = UNNotificationRequest(
-            identifier: "approaching-destination",
-            content: content,
-            trigger: nil
-        )
-        UNUserNotificationCenter.current().add(request)
+            let content = UNMutableNotificationContent()
+            content.title = "まもなく目的駅です"
+            content.body = "降車の準備をしてください。"
+            content.sound = .default
+
+            let request = UNNotificationRequest(
+                identifier: "approaching-destination",
+                content: content,
+                trigger: nil
+            )
+            UNUserNotificationCenter.current().add(request)
+        }
     }
 
     private func impactHaptic() {

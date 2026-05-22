@@ -108,10 +108,7 @@ struct ODPTTrain: Codable, Identifiable {
 enum DelayNormalizer {
     static func normalizeDelayMinutes(_ rawDelay: Int?) -> Int {
         guard let rawDelay, rawDelay > 0 else { return 0 }
-        if rawDelay >= 60 {
-            return Int(ceil(Double(rawDelay) / 60.0))
-        }
-        return rawDelay
+        return Int(ceil(Double(rawDelay) / 60.0))
     }
 }
 
@@ -122,15 +119,9 @@ struct ETAEstimate: Equatable {
 }
 
 enum ETAEstimator {
-    static func estimate(from scheduledDate: Date, delaySeconds: Int?) -> ETAEstimate {
-        let normalizedSeconds: Int
-        if let delaySeconds {
-            normalizedSeconds = delaySeconds >= 60 ? delaySeconds : delaySeconds * 60
-        } else {
-            normalizedSeconds = 0
-        }
-
-        let adjustedDate = scheduledDate.addingTimeInterval(TimeInterval(max(0, normalizedSeconds)))
+    static func estimate(from scheduledDate: Date, delayInSeconds: Int?) -> ETAEstimate {
+        let normalizedSeconds = max(0, delayInSeconds ?? 0)
+        let adjustedDate = scheduledDate.addingTimeInterval(TimeInterval(normalizedSeconds))
         let remaining = max(0, Int(ceil(adjustedDate.timeIntervalSinceNow / 60)))
         return ETAEstimate(scheduledDate: scheduledDate, adjustedDate: adjustedDate, remainingMinutes: remaining)
     }

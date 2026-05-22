@@ -7,7 +7,7 @@ final class DelayNormalizerTests: XCTestCase {
     }
 
     func testNormalizeMinutesAsIsForSmallValues() {
-        XCTAssertEqual(DelayNormalizer.normalizeDelayMinutes(5), 5)
+        XCTAssertEqual(DelayNormalizer.normalizeDelayMinutes(5), 1)
     }
 
     func testNormalizeNilToZero() {
