@@ -3,14 +3,14 @@ import XCTest
 
 final class DelayNormalizerTests: XCTestCase {
     func testNormalizeSecondsToMinutes() {
-        XCTAssertEqual(DelayNormalizer.normalizeDelayMinutes(120), 2)
+        XCTAssertEqual(DelayNormalizer.normalizeDelaySecondsToMinutes(delayInSeconds: 120), 2)
     }
 
     func testNormalizeMinutesAsIsForSmallValues() {
-        XCTAssertEqual(DelayNormalizer.normalizeDelayMinutes(5), 1)
+        XCTAssertEqual(DelayNormalizer.normalizeDelaySecondsToMinutes(delayInSeconds: 5), 1)
     }
 
     func testNormalizeNilToZero() {
-        XCTAssertEqual(DelayNormalizer.normalizeDelayMinutes(nil), 0)
+        XCTAssertEqual(DelayNormalizer.normalizeDelaySecondsToMinutes(delayInSeconds: nil), 0)
     }
 }

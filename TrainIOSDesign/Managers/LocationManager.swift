@@ -17,7 +17,7 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.distanceFilter = 20
-        // Info.plist の background mode(location) とセットで有効化し、バッテリー影響を許容して降車通知精度を優先する。
+        // Requires Info.plist background location mode; this prioritizes reminder accuracy over battery usage.
         locationManager.allowsBackgroundLocationUpdates = true
     }
 

@@ -18,7 +18,7 @@ struct ODPTTrainInformation: Codable, Identifiable {
     }
 
     var normalizedDelayMinutes: Int {
-        DelayNormalizer.normalizeDelayMinutes(delay)
+        DelayNormalizer.normalizeDelaySecondsToMinutes(delayInSeconds: delay)
     }
 
     enum CodingKeys: String, CodingKey {
@@ -106,9 +106,9 @@ struct ODPTTrain: Codable, Identifiable {
 }
 
 enum DelayNormalizer {
-    static func normalizeDelayMinutes(_ rawDelay: Int?) -> Int {
-        guard let rawDelay, rawDelay > 0 else { return 0 }
-        return Int(ceil(Double(rawDelay) / 60.0))
+    static func normalizeDelaySecondsToMinutes(delayInSeconds: Int?) -> Int {
+        guard let delayInSeconds, delayInSeconds > 0 else { return 0 }
+        return Int(ceil(Double(delayInSeconds) / 60.0))
     }
 }
 

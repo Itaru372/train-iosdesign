@@ -7,7 +7,7 @@ enum ODPTClientError: Error {
 
 actor ODPTClient {
     private let baseURL = URL(string: "https://api.odpt.org/api/v4")!
-    private let maxBackoffSeconds: TimeInterval = 180
+    private let maxPollingBackoffSeconds: TimeInterval = 180
     private let urlSession: URLSession
     private let apiKey: String
     private var pollingTask: Task<Void, Never>?
@@ -36,7 +36,7 @@ actor ODPTClient {
                     await onUpdate(info)
                     backoff = interval
                 } catch {
-                    backoff = min(backoff * 2, maxBackoffSeconds)
+                    backoff = min(backoff * 2, maxPollingBackoffSeconds)
                 }
                 let nanos = UInt64(backoff * 1_000_000_000)
                 try? await Task.sleep(nanoseconds: nanos)

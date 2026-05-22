@@ -12,7 +12,7 @@ struct TrainIOSDesignApp: App {
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            fatalError("Could not create ModelContainer. Check schema compatibility, persistent store availability, and disk space. Error: \(error)")
+            fatalError("Could not create ModelContainer. Verify app has storage permission/space and reset local persistent store if schema changed. Error: \(error)")
         }
     }()
 
