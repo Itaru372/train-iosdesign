@@ -17,7 +17,7 @@ final class TrainStatusViewModel: ObservableObject {
     @Published var isDelayed: Bool = false
 
     let coordinator: TransitTrackingCoordinator
-    private let client: ODPTClient
+    private let client: ODPTClient?
     private var cancellables = Set<AnyCancellable>()
 
 #if canImport(ActivityKit)
@@ -26,7 +26,7 @@ final class TrainStatusViewModel: ObservableObject {
 
     init(
         coordinator: TransitTrackingCoordinator = TransitTrackingCoordinator(),
-        client: ODPTClient = ODPTClient(apiKey: "REPLACE_WITH_ODPT_API_KEY")
+        client: ODPTClient? = AppConfiguration.odptAPIKey.map { ODPTClient(apiKey: $0) }
     ) {
         self.coordinator = coordinator
         self.client = client
@@ -34,6 +34,11 @@ final class TrainStatusViewModel: ObservableObject {
     }
 
     func startTracking() {
+        guard let client else {
+            statusText = "ODPT APIキー未設定"
+            assertionFailure("ODPT API key is not configured.")
+            return
+        }
         requestNotificationPermission()
         coordinator.start()
         statusText = "移動検知待機中"
@@ -47,7 +52,9 @@ final class TrainStatusViewModel: ObservableObject {
 
     func stopTracking() {
         coordinator.stop()
-        Task { await client.stopPolling() }
+        if let client {
+            Task { await client.stopPolling() }
+        }
         statusText = "停止中"
         Task { await endLiveActivity() }
     }

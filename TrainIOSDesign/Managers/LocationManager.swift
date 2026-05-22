@@ -2,12 +2,14 @@ import Foundation
 import CoreLocation
 import UserNotifications
 import Combine
+import OSLog
 
 final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published private(set) var currentLocation: CLLocation?
     @Published private(set) var isApproachingDestination = false
 
     private let locationManager = CLLocationManager()
+    private let logger = Logger(subsystem: "com.trainiosdesign.app", category: "LocationManager")
     private var trackedRegionIdentifier: String?
 
     override init() {
@@ -62,7 +64,7 @@ final class LocationManager: NSObject, ObservableObject, CLLocationManagerDelega
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location error: \(error.localizedDescription)")
+        logger.error("Location error: \(error.localizedDescription, privacy: .public)")
     }
 
     static func isWithinGeofence(

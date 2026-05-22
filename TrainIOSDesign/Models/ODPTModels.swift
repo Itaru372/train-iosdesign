@@ -135,7 +135,3 @@ enum ETAEstimator {
         return ETAEstimate(scheduledDate: scheduledDate, adjustedDate: adjustedDate, remainingMinutes: remaining)
     }
 }
-
-extension ODPTTrainInformation {
-    var id: String { identifier }
-}
